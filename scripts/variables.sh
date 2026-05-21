@@ -1,6 +1,10 @@
 #!/usr/bin/env bash
 # scripts/variables.sh
 # Single source of truth for option names, defaults, and runtime paths.
+# Constants here are sourced and read by other scripts (helpers, daemon,
+# tick, apply_state, picker, doctor, entry). Shellcheck can't see across
+# files, so disable SC2034 for this declarations-only file.
+# shellcheck disable=SC2034
 
 OPT_ENABLED="@claude-enabled"
 OPT_PICKER_KEY="@claude-picker-key"
