@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+# Append the full invocation to $STUB_OUT for assertions.
+printf '%s\n' "$*" >> "${STUB_OUT:-/dev/null}"
+
+# Emulate just the subcommands the tests use.
+case "$1" in
+  show-option|show-options)
+    # show-option -gqv NAME [or -wqv -t target NAME]
+    printf '%s' "${STUB_OPT_VALUE:-}"
+    exit 0
+    ;;
+  set-option|display-message|kill-window|switch-client|send-keys|list-panes|set-hook|bind-key|run-shell|refresh-client|display-popup|display-menu)
+    exit 0
+    ;;
+  *)
+    exit 0
+    ;;
+esac
