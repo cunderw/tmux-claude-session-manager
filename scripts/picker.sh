@@ -59,9 +59,13 @@ if [ "${1:-}" = "--fzf-inner" ]; then
   sel="$(render_lines | fzf \
     --with-nth=2 \
     --delimiter=$'\t' \
-    --header='Enter=jump  C-k=kill  C-l=clear  Esc=close' \
+    --header='Enter/l=jump  C-k/x=kill  C-l/c=clear  h/Esc=close' \
+    --bind 'j:down,k:up' \
+    --bind 'l:accept,h:abort' \
     --bind 'ctrl-k:execute(tmux send-keys -t {1} C-c)+abort' \
+    --bind 'x:execute(tmux send-keys -t {1} C-c)+abort' \
     --bind 'ctrl-l:execute(tmux send-keys -t {1} "/clear" Enter)+abort' \
+    --bind 'c:execute(tmux send-keys -t {1} "/clear" Enter)+abort' \
     --expect=enter)"
   key="$(echo "$sel" | head -1)"
   line="$(echo "$sel" | sed -n 2p)"

@@ -47,10 +47,17 @@ tmux bind-key "$picker_key" run-shell -b "$CURRENT_DIR/claude_session_manager.tm
 toggle_key="$(get_tmux_option "@claude-toggle-key" "$(echo "$picker_key" | tr '[:lower:]' '[:upper:]')")"
 tmux bind-key "$toggle_key" run-shell -b "$CURRENT_DIR/claude_session_manager.tmux toggle"
 
-# Inject window-name format with @claude-status colorization, preserving
+# Inject window-name format with @claude-status indicator, preserving
 # the user's original format. We store the pristine original on first run
 # in a sibling tmux option (@claude-orig-<opt>) and always rebuild from it,
 # which makes reloads safely idempotent.
+#
+# Prepends a small colored dot when @claude-status is set. We use a glyph
+# (not just a fg-color directive) because rich themes typically re-color
+# every part of the window-status format with their own `#[fg=...]`
+# directives that would override a leading style. The dot is sandwiched
+# between our `#[fg=COLOR]` and `#[default]`, so no theme directive can
+# slip in to suppress it.
 inject_format() {
   local opt="$1"   # window-status-format or window-status-current-format
   local saved_key="@claude-orig-$opt"
@@ -60,12 +67,14 @@ inject_format() {
     [ -n "$original" ] || original="#I:#W#F"
     tmux set-option -gq "$saved_key" "$original"
   fi
-  local busy attn done_c
+  local busy attn done_c glyph
   busy="$(get_tmux_option "$OPT_COLOR_BUSY" "$DEFAULT_COLOR_BUSY")"
   attn="$(get_tmux_option "$OPT_COLOR_ATTN" "$DEFAULT_COLOR_ATTN")"
   done_c="$(get_tmux_option "$OPT_COLOR_DONE" "$DEFAULT_COLOR_DONE")"
-  local cond="#[fg=#{?#{==:#{@claude-status},busy},$busy,#{?#{==:#{@claude-status},attn},$attn,#{?#{==:#{@claude-status},done},$done_c,default}}}]"
-  tmux set-option -gq "$opt" "${cond}${original}#[default]"
+  glyph="$(get_tmux_option "@claude-indicator-glyph" "●")"
+  local color="#{?#{==:#{@claude-status},busy},$busy,#{?#{==:#{@claude-status},attn},$attn,#{?#{==:#{@claude-status},done},$done_c,default}}}"
+  local indicator="#{?#{@claude-status},#[fg=${color}]${glyph}#[default] ,}"
+  tmux set-option -gq "$opt" "${indicator}${original}"
 }
 inject_format "window-status-format"
 inject_format "window-status-current-format"

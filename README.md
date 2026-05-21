@@ -4,12 +4,13 @@ Per-window status indicators and a session picker for [Claude Code](https://clau
 
 ## Features
 
-- Window-name color flips automatically:
+- A small colored dot (●) appears next to the window name in the tmux status bar:
   - **yellow** while a Claude pane is working
   - **red** when it needs your input
   - **green** briefly when it finishes
-- `prefix + j` opens an `fzf` popup listing all live Claude sessions on the tmux server. `Enter` jumps to the pane, `C-k` sends `C-c`, `C-l` sends `/clear`.
-- `prefix + J` toggles the daemon on/off.
+  - The dot is prepended to your existing format, so it works alongside any theme (powerkit, tokyo-night, catppuccin, etc.) that recolors other parts of the window status. Glyph is configurable via `@claude-indicator-glyph`.
+- `prefix + j` opens an `fzf` popup listing all live Claude sessions on the tmux server. Both arrow keys and vim keys (`h`/`j`/`k`/`l`) navigate; `Enter` or `l` jumps; `C-k` or `x` sends `C-c`; `C-l` or `c` sends `/clear`; `h` or `Esc` closes.
+- `prefix + J` toggles the daemon on/off (configurable via `@claude-toggle-key`).
 - Single bash daemon per tmux server. No external services. macOS + Linux.
 - TPM-installable. Pure bash plus standard POSIX tools (`awk`, `ps`, `jq`).
 
@@ -50,9 +51,10 @@ All options are tmux user options. Set them in `~/.tmux.conf` **before** loading
 | `@claude-picker-key` | `j` | Picker keybind (used with prefix). |
 | `@claude-toggle-key` | uppercase of picker key | Toggle daemon on/off. |
 | `@claude-poll-interval` | `2` | Seconds between polls. |
-| `@claude-color-busy` | `yellow` | Window-name color while busy. |
-| `@claude-color-attn` | `red` | Color when input needed. |
-| `@claude-color-done` | `green` | Color for done-linger. |
+| `@claude-color-busy` | `yellow` | Dot color while busy. |
+| `@claude-color-attn` | `red` | Dot color when input needed. |
+| `@claude-color-done` | `green` | Dot color for done-linger. |
+| `@claude-indicator-glyph` | `●` | The glyph used as the per-window indicator. |
 | `@claude-done-linger-ms` | `3000` | How long green persists after a session exits. |
 | `@claude-log-level` | `warn` | `error \| warn \| info \| debug`. |
 
