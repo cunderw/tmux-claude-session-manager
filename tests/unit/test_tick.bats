@@ -4,9 +4,13 @@ load ../helper.bash
 
 setup() { common_setup; }
 
-# Replace the tmux stub's list-panes with a fixture.
+# Install a per-test tmux stub that also handles `list-panes` by reading a
+# fixture. Writes to $BATS_TEST_TMPDIR (NOT the shared $STUBS dir) so the
+# committed default stub stays untouched.
 override_list_panes() {
-  cat > "$STUBS/tmux" <<'STUB'
+  local override_dir="$BATS_TEST_TMPDIR/override"
+  mkdir -p "$override_dir"
+  cat > "$override_dir/tmux" <<'STUB'
 #!/usr/bin/env bash
 printf 'tmux %s\n' "$*" >> "${STUB_OUT:-/dev/null}"
 case "$1" in
@@ -15,29 +19,15 @@ case "$1" in
     exit 0
     ;;
   show-option|show-options)
-    case "$2" in
-      -gqv) printf '%s' "${STUB_OPT_VALUE:-}" ;;
-      *)    printf '%s' "${STUB_OPT_VALUE:-}" ;;
-    esac
+    printf '%s' "${STUB_OPT_VALUE:-}"
     exit 0
     ;;
   *) exit 0 ;;
 esac
 STUB
-  chmod +x "$STUBS/tmux"
-}
-
-teardown() {
-  # Restore the default tmux stub.
-  cat > "$STUBS/tmux" <<'STUB'
-#!/usr/bin/env bash
-printf '%s\n' "$*" >> "${STUB_OUT:-/dev/null}"
-case "$1" in
-  show-option|show-options) printf '%s' "${STUB_OPT_VALUE:-}"; exit 0 ;;
-  *) exit 0 ;;
-esac
-STUB
-  chmod +x "$STUBS/tmux"
+  chmod +x "$override_dir/tmux"
+  PATH="$override_dir:$PATH"
+  export PATH
 }
 
 @test "empty JSON: no per-window calls" {
