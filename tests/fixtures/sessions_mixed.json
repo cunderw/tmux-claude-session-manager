@@ -1,0 +1,5 @@
+[
+  {"pid":36951,"cwd":"/Users/u/repo","kind":"interactive","startedAt":1779375638455,"sessionId":"aaaa","status":"busy"},
+  {"pid":36952,"cwd":"/Users/u/repo2","kind":"interactive","startedAt":1779375638456,"sessionId":"bbbb","status":"idle"},
+  {"pid":36953,"cwd":"/Users/u/repo3","kind":"background","startedAt":1779375638457,"sessionId":"cccc","status":"busy"}
+]

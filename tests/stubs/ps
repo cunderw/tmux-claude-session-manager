@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+# Reads fixture path from $STUB_PS_FIXTURE for `ps -A -o pid=,ppid=`.
+printf 'ps %s\n' "$*" >> "${STUB_OUT:-/dev/null}"
+if [ -n "${STUB_PS_FIXTURE:-}" ] && [ -f "$STUB_PS_FIXTURE" ]; then
+  cat "$STUB_PS_FIXTURE"
+  exit 0
+fi
+# Fallback to real ps so tests that don't set the fixture still work.
+exec /bin/ps "$@"

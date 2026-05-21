@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+# bin/run_tests — run all bats tests under tests/.
+set -euo pipefail
+DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+exec bats "$DIR/tests/unit" "$DIR/tests/integration"

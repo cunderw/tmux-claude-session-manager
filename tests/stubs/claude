@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+# Reads fixture path from $STUB_CLAUDE_FIXTURE.
+printf 'claude %s\n' "$*" >> "${STUB_OUT:-/dev/null}"
+case "$1" in
+  agents)
+    if [ -n "${STUB_CLAUDE_FIXTURE:-}" ] && [ -f "$STUB_CLAUDE_FIXTURE" ]; then
+      cat "$STUB_CLAUDE_FIXTURE"
+      exit "${STUB_CLAUDE_EXIT:-0}"
+    fi
+    printf '[]'
+    exit 0
+    ;;
+  --version)
+    printf '%s\n' "${STUB_CLAUDE_VERSION:-2.1.146 (Claude Code)}"
+    exit 0
+    ;;
+esac
+exit 0
