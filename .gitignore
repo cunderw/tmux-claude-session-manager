@@ -1,0 +1,14 @@
+# bats output
+.bats-tmpdir/
+*.tap
+
+# editor
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
+
+# local runtime
+*.log
+*.pid
