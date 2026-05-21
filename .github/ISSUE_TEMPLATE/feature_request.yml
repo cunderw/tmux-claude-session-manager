@@ -1,0 +1,39 @@
+name: Feature request
+description: Suggest a new capability or option
+labels: ["enhancement"]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: What problem does this solve?
+      description: |
+        Describe the situation where the current plugin falls short. Concrete is better than abstract — what were you trying to do, and what got in the way?
+    validations:
+      required: true
+
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed behavior
+      description: |
+        What would the plugin do that it doesn't do today? If you have a config knob in mind (e.g. `@claude-something xyz`), describe it.
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+      description: |
+        Workarounds, existing options, or other approaches you tried or thought about. Helps us see why we'd reach for this one over them.
+    validations:
+      required: false
+
+  - type: textarea
+    id: context
+    attributes:
+      label: Additional context
+      description: |
+        Screenshots, links to similar features in other tmux plugins, anything else.
+    validations:
+      required: false

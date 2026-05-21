@@ -1,0 +1,82 @@
+name: Bug report
+description: Something isn't working
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to file a bug. The `doctor` output below catches most install/environment problems on its own — please paste it in.
+
+  - type: textarea
+    id: summary
+    attributes:
+      label: Summary
+      description: What did you expect to happen, and what actually happened?
+      placeholder: |
+        Expected: window-name turns yellow when Claude is busy.
+        Actual: nothing visible changes.
+    validations:
+      required: true
+
+  - type: textarea
+    id: repro
+    attributes:
+      label: Steps to reproduce
+      description: Minimal sequence we can run to see the same thing.
+      placeholder: |
+        1. Install via TPM (`set -g @plugin 'cunderw/tmux-claude-session-manager'`, `prefix + I`).
+        2. Open a new tmux window, run `claude`.
+        3. Wait ~5s.
+        4. Window-name color does not change.
+    validations:
+      required: true
+
+  - type: textarea
+    id: doctor
+    attributes:
+      label: doctor output
+      description: |
+        Paste the full output of `~/.tmux/plugins/tmux-claude-session-manager/claude_session_manager.tmux doctor`. This includes versions and config for everything the plugin touches.
+      render: text
+    validations:
+      required: true
+
+  - type: input
+    id: os
+    attributes:
+      label: OS
+      description: e.g. `macOS 14.5 (arm64)`, `Ubuntu 22.04`, `Arch Linux`.
+    validations:
+      required: true
+
+  - type: textarea
+    id: tmux_config
+    attributes:
+      label: Relevant tmux config
+      description: |
+        If this is a display/indicator issue, paste your `set -g status-*` / `set -g window-status-*` lines and any theme plugin (`tmux-powerkit`, `tokyo-night-tmux`, `catppuccin`, etc.) you use. Otherwise leave blank.
+      render: tmux
+    validations:
+      required: false
+
+  - type: textarea
+    id: log
+    attributes:
+      label: Plugin log (last ~50 lines)
+      description: |
+        `tail -50 ${TMUX_TMPDIR:-/tmp}/tmux-$(id -u)-claude-session-manager.log` if anything's in there. Optional.
+      render: text
+    validations:
+      required: false
+
+  - type: checkboxes
+    id: precheck
+    attributes:
+      label: Pre-check
+      options:
+        - label: I've confirmed `claude --version` is ≥ 2.1.139.
+          required: true
+        - label: I've confirmed `tmux -V` is ≥ 3.2.
+          required: true
+        - label: I'm on a bash that's ≥ 4 (`bash --version`). macOS users: this means `brew install bash`, not `/bin/bash`.
+          required: true
