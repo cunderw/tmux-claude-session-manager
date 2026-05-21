@@ -55,6 +55,7 @@ All options are tmux user options. Set them in `~/.tmux.conf` **before** loading
 | `@claude-color-attn` | `red` | Dot color when input needed. |
 | `@claude-color-done` | `green` | Dot color for done-linger. |
 | `@claude-indicator-glyph` | `●` | The glyph used as the per-window indicator. |
+| `@claude-indicator-position` | `after-name` | Where to inject the indicator: `after-name` (right after `#W` in your existing format — inherits the segment's themed background) or `prepend` (at the very start of the format). Falls back to `prepend` if your format has no `#W` token. |
 | `@claude-done-linger-ms` | `3000` | How long green persists after a session exits. |
 | `@claude-log-level` | `warn` | `error \| warn \| info \| debug`. |
 

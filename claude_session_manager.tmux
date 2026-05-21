@@ -52,12 +52,14 @@ tmux bind-key "$toggle_key" run-shell -b "$CURRENT_DIR/claude_session_manager.tm
 # in a sibling tmux option (@claude-orig-<opt>) and always rebuild from it,
 # which makes reloads safely idempotent.
 #
-# Prepends a small colored dot when @claude-status is set. We use a glyph
-# (not just a fg-color directive) because rich themes typically re-color
-# every part of the window-status format with their own `#[fg=...]`
-# directives that would override a leading style. The dot is sandwiched
-# between our `#[fg=COLOR]` and `#[default]`, so no theme directive can
-# slip in to suppress it.
+# Placement: by default the indicator is injected immediately AFTER the
+# `#W` window-name token in the saved original. That puts the colored
+# glyph inside the segment's styled background (works cleanly with
+# powerline-style themes like powerkit/tokyo-night that color every
+# segment). Override with `@claude-indicator-position`:
+#   - after-name  (default): inject after `#W`
+#   - prepend             : inject at the very start of the format
+# If `#W` isn't present in the original, falls back to `prepend`.
 inject_format() {
   local opt="$1"   # window-status-format or window-status-current-format
   local saved_key="@claude-orig-$opt"
@@ -67,14 +69,23 @@ inject_format() {
     [ -n "$original" ] || original="#I:#W#F"
     tmux set-option -gq "$saved_key" "$original"
   fi
-  local busy attn done_c glyph
+  local busy attn done_c glyph position
   busy="$(get_tmux_option "$OPT_COLOR_BUSY" "$DEFAULT_COLOR_BUSY")"
   attn="$(get_tmux_option "$OPT_COLOR_ATTN" "$DEFAULT_COLOR_ATTN")"
   done_c="$(get_tmux_option "$OPT_COLOR_DONE" "$DEFAULT_COLOR_DONE")"
   glyph="$(get_tmux_option "@claude-indicator-glyph" "●")"
+  position="$(get_tmux_option "@claude-indicator-position" "after-name")"
   local color="#{?#{==:#{@claude-status},busy},$busy,#{?#{==:#{@claude-status},attn},$attn,#{?#{==:#{@claude-status},done},$done_c,default}}}"
-  local indicator="#{?#{@claude-status},#[fg=${color}]${glyph}#[default] ,}"
-  tmux set-option -gq "$opt" "${indicator}${original}"
+
+  if [ "$position" = "after-name" ] && [[ "$original" == *"#W"* ]]; then
+    # `#[fg=default]` restores foreground after the dot so the trailing space
+    # / norange in most themes doesn't bleed our color.
+    local indicator_inside="#{?#{@claude-status}, #[fg=${color}]${glyph}#[fg=default],}"
+    tmux set-option -gq "$opt" "${original//\#W/#W${indicator_inside}}"
+  else
+    local indicator="#{?#{@claude-status},#[fg=${color}]${glyph}#[default] ,}"
+    tmux set-option -gq "$opt" "${indicator}${original}"
+  fi
 }
 inject_format "window-status-format"
 inject_format "window-status-current-format"
