@@ -16,4 +16,6 @@ common_setup() {
   source "$PLUGIN_DIR/scripts/variables.sh"
   # shellcheck disable=SC1091
   source "$PLUGIN_DIR/scripts/helpers.sh"
+  # Export key paths so subprocess test stubs (e.g. fake_daemon) inherit them.
+  export PIDFILE LOGFILE STATEFILE
 }
