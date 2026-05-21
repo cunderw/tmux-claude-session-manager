@@ -16,19 +16,28 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Install bats-core, jq, fzf, tmux
+      - name: Install bats-core, jq, fzf, tmux, bash
         run: |
           if [ "${{ matrix.os }}" = "macos-latest" ]; then
-            brew install bats-core jq fzf tmux
+            # System /bin/bash on macOS is 3.2; we need 4+ for `declare -A`
+            # and `local -n` used in scripts/apply_state.sh.
+            brew install bats-core jq fzf tmux bash
           else
             sudo apt-get update
             sudo apt-get install -y bats jq fzf tmux
           fi
           tmux -V
           bats --version
+          bash --version | head -1
 
       - name: Run tests
-        run: bin/run_tests
+        run: |
+          # Ensure brew bash leads PATH on macOS so bats picks up 5.x.
+          if [ "${{ matrix.os }}" = "macos-latest" ]; then
+            export PATH="$(brew --prefix bash)/bin:$PATH"
+            echo "Using bash: $(command -v bash) ($(bash --version | head -1))"
+          fi
+          bin/run_tests
 
   shellcheck:
     runs-on: ubuntu-latest

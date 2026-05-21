@@ -40,6 +40,18 @@ check jq      jq     1 "jq --version"
 check fzf     fzf    0 "fzf --version"
 check awk     awk    1 ""
 check ps      ps     1 ""
+
+# bash 4+ is required for `declare -A` (associative arrays) and `local -n`
+# (name references) used in scripts/apply_state.sh. macOS ships bash 3.2
+# in /bin/bash; users need brew bash or equivalent.
+bash_major="$(bash -c 'echo "${BASH_VERSINFO[0]}"' 2>/dev/null || echo 0)"
+bash_ver="$(bash --version 2>/dev/null | head -1)"
+if [ "${bash_major:-0}" -ge 4 ]; then
+  printf '  %-9s %s %s\n' "bash" "$(ok)" "$bash_ver"
+else
+  printf '  %-9s %s %s\n' "bash" "$(red 'TOO OLD')" "$bash_ver (need 4+; macOS: brew install bash)"
+  EXIT=1
+fi
 echo
 
 # --- claude probe -----------------------------------------------------

@@ -18,6 +18,11 @@ Per-window status indicators and a session picker for [Claude Code](https://clau
 
 - tmux ≥ 3.2 (for `display-popup`)
 - claude ≥ 2.1.139 (for `claude agents --json`)
+- bash ≥ 4 (for `declare -A` and `local -n`). **macOS ships bash 3.2 in `/bin/bash`** — install a modern bash:
+  ```bash
+  brew install bash
+  ```
+  The plugin's scripts use `#!/usr/bin/env bash`, so brew bash on PATH is picked up automatically.
 - `jq`
 - `fzf` (optional; picker falls back to `display-menu` when missing)
 
